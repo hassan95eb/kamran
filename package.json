@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "baseline:capture": "node scripts/capture-baseline.mjs desktop && node scripts/capture-baseline.mjs tablet && node scripts/capture-baseline.mjs mobile"
   },
   "dependencies": {
     "react": "^19.0.0",
