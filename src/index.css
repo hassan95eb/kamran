@@ -1,0 +1,802 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gulzar&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #101213;
+  --color-graphite: #25292b;
+  --color-steel: #4c5356;
+  --color-mist: #c4cbcc;
+  --color-bone: #f0f2f1;
+  --color-signal: #ff0000;
+
+  /* Latin faces lead; Persian glyphs fall through to their partner face,
+     so mixed strings never land in a system font. */
+  --font-display: 'Instrument Serif', 'Gulzar', Georgia, serif;
+  --font-sans: 'Instrument Sans', 'Noto Naskh Arabic', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Noto Naskh Arabic', ui-monospace, monospace;
+  --font-fa: 'Noto Naskh Arabic', system-ui, sans-serif;
+  --font-fa-display: 'Gulzar', 'Noto Naskh Arabic', serif;
+}
+
+:root {
+  color-scheme: dark;
+  --motion-cinema: cubic-bezier(0.3, 0, 0.1, 1);
+  --motion-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv01';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-signal);
+  color: var(--color-bone);
+}
+
+/* Hide scrollbar until scrolling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+*:hover {
+  scrollbar-color: var(--color-steel) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+}
+:hover::-webkit-scrollbar-thumb {
+  background: var(--color-steel);
+}
+
+/* ── Bilingual type system ──────────────────────────────────
+   One brand, two expressions.
+   EN Display  Instrument Serif   · tight leading, italic accents
+   EN Body     Instrument Sans    · condensed axis for title-sequence caps
+   EN Meta     JetBrains Mono     · tracked, uppercase
+   FA Display  Gulzar             · open leading, no italic, no tracking
+   FA Body     Noto Naskh Arabic  · 1.85 leading for long reading
+   FA Meta     Noto Naskh Arabic 500 · same size step, untracked, no case
+   Rules key off the element's own language, so a Latin title isolated
+   inside a Persian page (<bdi lang="en">) keeps its English treatment. */
+:root {
+  --lead-display-en: 0.9;
+  --lead-display-fa: 1.5;
+  --lead-body-en: 1.6;
+  --lead-body-fa: 1.85;
+  --track-meta-en: 0.04em;
+  --track-meta-fa: 0;
+  --switch-active: var(--color-bone);
+  --switch-idle: color-mix(in srgb, var(--color-mist) 60%, transparent);
+  --switch-mark: var(--color-signal);
+}
+
+[dir='rtl'],
+.fa {
+  font-family: var(--font-fa);
+}
+.fa-display {
+  font-family: var(--font-fa-display);
+}
+
+html[lang='fa'] body {
+  font-family: var(--font-fa);
+  line-height: var(--lead-body-fa);
+}
+
+/* FA Display — Gulzar needs room above and below; never slanted */
+.font-display:lang(fa),
+.fa-display:lang(fa) {
+  font-family: var(--font-fa-display);
+  line-height: var(--lead-display-fa);
+  letter-spacing: 0;
+  font-style: normal;
+}
+em:lang(fa),
+.italic:lang(fa) {
+  font-style: normal;
+}
+
+/* FA Body / Meta — drop Latin tracking + case logic */
+.eyebrow:lang(fa),
+.meta:lang(fa),
+.meta.home-meta:lang(fa),
+.home-meta .home-role-label:lang(fa),
+[class*='tracking-']:lang(fa),
+.uppercase:lang(fa) {
+  letter-spacing: var(--track-meta-fa);
+  text-transform: none;
+}
+.eyebrow:lang(fa),
+.meta:lang(fa) {
+  font-family: var(--font-fa);
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.8;
+}
+.home-meta .home-role-label:lang(fa) {
+  font-size: 0.75rem;
+}
+.condensed:lang(fa) {
+  font-family: var(--font-fa);
+  font-variation-settings: normal;
+  font-stretch: normal;
+}
+p:lang(fa),
+dd:lang(fa),
+li:lang(fa) {
+  overflow-wrap: break-word;
+}
+
+/* Language switcher — active state is weight + red rule, not colour alone */
+.lang-switch__item.is-active {
+  color: var(--switch-active);
+  font-weight: 500;
+}
+.lang-switch__item.is-active::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--switch-mark);
+}
+.lang-switch .lang-switch__item {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+/* Mixed-language title — both scripts are display type, the page language leads */
+.mixed-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.35em;
+}
+
+/* Reusable editorial helpers */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.hairline {
+  border-color: color-mix(in srgb, var(--color-steel) 45%, transparent);
+}
+
+/* Grain-free subtle vignette for hero media */
+.media-fade {
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0) 100%);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rise {
+  animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Homepage — title-sequence type */
+.condensed {
+  font-family: var(--font-sans);
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+}
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+.meta.home-meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.025em;
+}
+.home-meta .home-role-label {
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+}
+.still {
+  filter: grayscale(1) contrast(1.05);
+  transition: transform 1400ms cubic-bezier(0.22, 1, 0.36, 1), filter 900ms ease, clip-path 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes iris {
+  from { clip-path: inset(48% 0 48% 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+.iris {
+  animation: iris 1.6s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .iris { animation: none; }
+}
+
+/* ═══ Bilingual system — one brand, two language expressions ═════════════
+   EN display  Instrument Serif · EN body Instrument Sans · EN meta JetBrains Mono
+   FA display  Gulzar (nastaliq)  · FA body Noto Naskh Arabic· FA meta Noto Naskh Arabic
+   Layout is written with logical start/end utilities, so `dir` recomposes it;
+   imagery is never flipped. Only reading-direction cues (arrows, nudges) reverse. */
+@layer utilities {
+  /* Persian: no tracking (it breaks joins), no forced caps, room for ascenders */
+  :lang(fa) {
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  :lang(fa) .eyebrow,
+  :lang(fa) .meta {
+    font-family: 'Noto Naskh Arabic', var(--font-mono);
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.8;
+  }
+  :lang(fa) .eyebrow {
+    font-size: 0.8125rem;
+  }
+  :lang(fa) .meta.home-meta,
+  :lang(fa) .meta {
+    font-size: 0.8125rem;
+  }
+  :lang(fa) .home-meta .home-role-label {
+    font-size: 0.75rem;
+    letter-spacing: 0;
+  }
+  /* Nastaliq needs vertical air; Latin display lines inside keep their own leading */
+  :lang(fa) .font-display {
+    line-height: 1.75;
+  }
+  :lang(fa) .fa-display {
+    font-family: var(--font-fa-display);
+    letter-spacing: 0;
+  }
+  /* Persian title-sequence role: Noto Naskh Arabic bold stands in for condensed Instrument Sans */
+  :lang(fa) .condensed {
+    font-family: 'Noto Naskh Arabic', var(--font-sans);
+    letter-spacing: 0;
+  }
+  /* No synthetic slanting of Persian script — emphasis is carried by tone instead */
+  :lang(fa) em,
+  :lang(fa) .italic {
+    font-style: normal;
+  }
+  /* Body copy */
+  :lang(fa) p,
+  :lang(fa) li,
+  :lang(fa) dd {
+    word-spacing: 0.02em;
+  }
+  .lang-switch {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+  }
+}
+
+/* ── Home end frame — closing credits, not a footer ─────────── */
+.end-email {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: baseline;
+  gap: 0.4em;
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(1.45rem, 4.2vw, 3.4rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--color-bone);
+  overflow-wrap: anywhere;
+}
+.end-email__text {
+  background: linear-gradient(var(--color-steel), var(--color-steel)) 0 100% / 100% 1px no-repeat,
+    linear-gradient(var(--color-signal), var(--color-signal)) 0 100% / 0 1px no-repeat;
+  padding-bottom: 0.08em;
+  transition: background-size 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.end-email:hover .end-email__text,
+.end-email:focus-visible .end-email__text {
+  background-size: 100% 1px, 100% 1px;
+}
+.end-email__arrow {
+  font-family: var(--font-sans);
+  font-size: 0.6em;
+  color: var(--color-mist);
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.end-email:hover .end-email__arrow,
+.end-email:focus-visible .end-email__arrow {
+  transform: translate(0.12em, -0.12em);
+}
+.end-email:focus-visible,
+.end-link:focus-visible {
+  outline: 1px solid var(--color-signal);
+  outline-offset: 4px;
+}
+.end-link {
+  transition: color 300ms ease;
+}
+.end-link:hover {
+  color: var(--color-bone);
+}
+.end-credits .meta,
+.end-credits {
+  font-size: 0.75rem;
+}
+
+/* ═══ Phase 4 · the descent ═══════════════════════════════════
+   Maknoun is the peak; everything after it slows. One shared, quiet vocabulary:
+   a masked lift (clip + a few px of travel + opacity). Intensity falls per section:
+   About 1.5 → Credits 2.5 → Contact 1.5 → End frame 1. Parents add .is-in / .is-seen;
+   children set --d (delay) and optionally --rise. Nothing loops. */
+.calm {
+  --rise: 8px;
+  opacity: 0;
+  translate: 0 var(--rise);
+  transition: opacity 900ms var(--motion-editorial) var(--d, 0ms),
+    translate 1200ms var(--motion-editorial) var(--d, 0ms);
+}
+.calm:lang(fa) {
+  --rise: 5px;
+}
+.is-in .calm,
+.is-seen .calm {
+  opacity: 1;
+  translate: 0 0;
+  clip-path: inset(-0.5em);
+}
+
+/* Maknoun → About: no blend. The bone plane withdraws (see .ch-field) and the dark
+   ground it rested on becomes the About chapter. */
+.about {
+  --leave: 0;
+  --p: 0;
+}
+/* About leaves prominence as the credits arrive */
+.about-hold {
+  opacity: calc(1 - var(--leave) * 0.5);
+}
+/* the portrait drifts a few pixels with the scroll; type stays put */
+.about-portrait {
+  scale: 1.04;
+}
+/* the single red word lands a beat after the sentence */
+.about-accent {
+  color: var(--color-mist);
+}
+.is-in .about-accent {
+  color: var(--color-signal);
+  transition: color 900ms ease 650ms;
+}
+
+/* Credits: rows wipe in top-down, quickly; titles stay dominant. Hover dimming owns opacity. */
+.credit-row {
+  position: relative;
+  clip-path: inset(0 0 100% 0);
+  translate: 0 8px;
+  transition: opacity 500ms ease, clip-path 900ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms),
+    translate 1000ms cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0ms);
+}
+.is-in .credit-row {
+  clip-path: inset(-0.5em -2em);
+  translate: 0 0;
+}
+
+/* Hover still — a memory fragment parked in the row's empty reading end, never over the title */
+.memory {
+  --mx: 0;
+  --my: 0;
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  inset-inline-end: 0;
+  width: 7rem;
+  height: min(4.5rem, calc(100% - 1rem));
+  overflow: hidden;
+  background: var(--color-graphite);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-50%);
+  clip-path: inset(14% 0 14% 0);
+  transition: opacity 180ms ease, clip-path 500ms var(--motion-editorial);
+}
+.memory[data-on='true'] {
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transition-duration: 280ms, 500ms;
+}
+.memory img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05) brightness(0.82);
+}
+.memory[data-on='true'] img {
+  scale: 1;
+}
+@media (min-width: 1280px) and (hover: hover) and (pointer: fine) {
+  .credit-title { padding-inline-end: 8rem; }
+  .credit-title:lang(fa) {
+    padding-inline-end: 0;
+    padding-inline-start: 8rem;
+  }
+  .memory:lang(fa) {
+    inset-inline-end: auto;
+    inset-inline-start: 0;
+  }
+}
+@media (max-width: 1279px), (hover: none), (pointer: coarse) {
+  .memory {
+    display: none;
+  }
+}
+
+/* Contact → End frame. Copy arrives in order (label, sentence, address, secondary);
+   the name then settles once, from below the bottom crop, and nothing moves again. */
+.end-step {
+  opacity: 0;
+  translate: 0 12px;
+  transition: opacity 1000ms var(--motion-editorial) min(var(--d, 0ms), 650ms),
+    translate 1300ms var(--motion-editorial) min(var(--d, 0ms), 650ms);
+}
+.end-mask {
+  /* Keep multi-line copy readable during the calm reveal, especially in Persian. */
+}
+.end-frame.is-seen .end-step {
+  opacity: 1;
+  translate: 0 0;
+  clip-path: inset(-0.5em);
+}
+.end-name__plate {
+  translate: 0 var(--name-from, 100%);
+  transition: translate 2200ms var(--motion-cinema) 150ms;
+}
+.end-frame.is-final .end-name__plate {
+  translate: 0 0;
+}
+/* the secondary line loses emphasis as the name takes over; it still wakes on hover */
+.end-frame.is-final .end-secondary {
+  opacity: 0.6;
+  transition: opacity 1400ms ease 300ms;
+}
+.end-frame.is-final .end-secondary:hover,
+.end-frame.is-final .end-secondary:focus-within {
+  opacity: 1;
+  transition-duration: 400ms;
+  transition-delay: 0ms;
+}
+/* the last red on the page: one small mark, after the name has stopped */
+.end-mark {
+  position: absolute;
+  inset-inline-end: 1.5rem;
+  top: var(--mark-top, 0.9rem);
+  width: 6px;
+  height: 6px;
+  background: var(--color-signal);
+  opacity: 0;
+  transition: opacity 600ms ease 0ms;
+}
+@media (min-width: 768px) {
+  .end-mark {
+    inset-inline-end: 2.5rem;
+  }
+}
+.end-frame.is-final .end-mark {
+  opacity: 1;
+  transition-delay: 2350ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calm,
+  .end-step,
+  .credit-row,
+  .end-name__plate,
+  .end-mark {
+    translate: none;
+    clip-path: none;
+    transition: opacity 600ms ease;
+    transition-delay: 0ms;
+  }
+  .credit-row {
+    opacity: 1;
+  }
+  .end-name__plate {
+    --name-from: 0;
+    opacity: 0;
+  }
+  .end-frame.is-final .end-name__plate {
+    opacity: 1;
+  }
+  .is-in .calm,
+  .is-seen .calm,
+  .is-in .credit-row,
+  .end-frame.is-seen .end-step {
+    clip-path: none;
+  }
+  .is-in .about-accent {
+    transition: none;
+  }
+  .about-portrait {
+    translate: none;
+    scale: 1;
+  }
+  .memory,
+  .memory[data-on='true'] {
+    translate: none;
+    clip-path: none;
+    transition: opacity 200ms ease;
+  }
+  .memory img,
+  .memory[data-on='true'] img {
+    scale: 1;
+    transition: none;
+  }
+}
+
+/* ── Opening shot → Act I ─────────────────────────────────────
+   One idea — a mask handoff: as the hero leaves, its frame closes into a
+   thin, darkening letterbox; the first collaboration then opens out of
+   that same letterbox, so the next still reads as the next shot.
+   --exit 0→1, --px/--py −1→1 are written by useOpeningShot(); --enter by useHandoff(). */
+.opening {
+  --exit: 0;
+  --px: 0;
+  --py: 0;
+}
+/* the shot recedes behind the scroll instead of scrolling with it */
+.opening__camera {
+  transform: translate3d(0, calc(var(--exit) * 20%), 0);
+}
+/* back plane: loses its cover state — closes to a letterbox, ends pull in, light drains */
+.opening__plate {
+  clip-path: inset(calc(var(--exit) * 34%) calc(var(--exit) * 2.5rem) calc(var(--exit) * 34%) 0);
+  transform: translate3d(calc(var(--px) * -5px), calc(var(--py) * -4px), 0);
+  filter: brightness(calc(1 - var(--exit) * 0.5));
+}
+/* autonomous life: two slow, incommensurate cycles so the frame never visibly loops */
+.opening__breath {
+  animation: drift 20s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation-play-state: var(--life, running);
+  transform-origin: 52% 42%;
+  scale: calc(1 + var(--exit) * 0.07);
+}
+.opening__still {
+  object-position: 50% 40%;
+}
+@keyframes drift {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.015) translate3d(0, -4px, 0); }
+}
+/* mid plane: the surname separates in depth — it lifts, contracts and dissolves
+   into the closing letterbox rather than scrolling off as a line of text */
+.opening__surname {
+  translate: calc(var(--px) * 3px) calc(var(--exit) * -16vh + var(--py) * 2px);
+  scale: calc(1 - var(--exit) * 0.06);
+  opacity: calc(1 - var(--exit) * 1.5);
+}
+.opening__given {
+  translate: calc(var(--px) * 5px) calc(var(--exit) * -12vh + var(--py) * 3px);
+  opacity: calc(1 - var(--exit) * 1.8);
+}
+/* front plane: metadata leaves first, quietly */
+.opening__front {
+  opacity: calc(1 - var(--exit) * 2.4);
+  translate: calc(var(--px) * 7px) calc(var(--exit) * -40px + var(--py) * 5px);
+}
+/* Act I enters over the receding shot; its hairline edge is the cut */
+.act-one {
+  box-shadow: 0 -1px 0 color-mix(in srgb, var(--color-steel) 45%, transparent);
+}
+/* the first still opens out of the hero's closing letterbox, still slightly pushed-in and dim */
+.handoff {
+  --enter: 1;
+  clip-path: inset(calc((1 - var(--enter)) * 34%) 0 calc((1 - var(--enter)) * 34%) 0);
+}
+.handoff > img {
+  scale: calc(1 + (1 - var(--enter)) * 0.07);
+  opacity: calc(0.45 + var(--enter) * 0.55);
+}
+@media (prefers-reduced-motion: reduce) {
+  .opening__breath, .opening__still { animation: none; }
+}
+
+/* ── Act I · the collaborations as one montage ───────────────────
+   One language across three shots: crop, mask, depth, controlled translation.
+   Image sits slightly forward, large type slightly behind, metadata stays put.
+   Vars are written per shot by useMontage(); at rest they default to a settled frame
+   (so reduced motion simply shows the composition). Love is image-led → 24 Frames is
+   type-led → Hussein is portrait-led and calms toward the authored work. */
+.montage {
+  --s: 0;
+  --arrive: 1;
+  --leave: 0;
+  --on: 1;
+}
+.work-index {
+  opacity: calc(0.45 + var(--on) * 0.55);
+}
+
+/* 01 · image-led: after it settles, the still pulls ahead of the title; on exit the
+   frame tightens to a letterbox (the hero's own gesture) while the type stays and takes over */
+.love-plate {
+  translate: 0 calc(min(var(--s), 0) * 2.4vh);
+  clip-path: inset(calc(var(--leave) * 15%) 0);
+  filter: brightness(calc(1 - var(--leave) * 0.35));
+}
+.love-type {
+  translate: 0 calc(min(var(--s), 0) * -1.6vh);
+  scale: calc(1 + var(--leave) * 0.035);
+  transform-origin: 0 60%;
+}
+.love-type:lang(fa) {
+  transform-origin: 100% 60%;
+}
+
+/* 02 · type-led: the monumental title is an architectural back plane; the small frame
+   crosses in front of it, opens from the same letterbox, then widens as the shot size changes */
+.fr-type {
+  translate: calc(var(--dir, 1) * var(--s) * 1.5% * var(--tk, 1)) calc(var(--s) * -7vh * var(--tk, 1));
+  scale: calc(0.95 + var(--arrive) * 0.05 - var(--leave) * 0.05);
+  opacity: calc((0.45 + var(--arrive) * 0.55) * (1 - var(--leave) * 0.6));
+}
+.fr-plate {
+  transform: translate3d(calc(var(--dir, 1) * var(--s) * -2.5vw), calc(var(--s) * 5vh - var(--leave) * 7vh), 0)
+    scale(calc(1 + var(--leave) * 0.14));
+}
+.fr-open {
+  clip-path: inset(calc((1 - var(--arrive)) * 30%) 0);
+}
+
+/* 03 · portrait-led and quieter: a vertical reveal, the image settles toward centre,
+   and its parallax damps to nothing as the dark field dims and goes still */
+.hus-plate {
+  clip-path: inset(calc((1 - var(--arrive)) * 16%) 0 0 0);
+  translate: 0 calc(var(--s) * (1 - var(--leave)) * 3.2vh);
+  filter: brightness(calc(1 - var(--leave) * 0.5));
+}
+.hus-type {
+  translate: 0 calc(var(--s) * (1 - var(--leave)) * -1.8vh);
+  opacity: calc(1 - var(--leave) * 0.35);
+}
+.hus-meta {
+  opacity: calc(1 - var(--leave) * 0.3);
+}
+
+/* ── Act II · the authored film (Maknoun) ────────────────────────
+   Not another shot in the montage: a new frame opens. The light field enters as a plane
+   inside the remaining dark (constrained margins, not a colour change), the title rises into
+   its frame, the still's crop widens around the viewer, and the role settles last.
+   Every var defaults to its settled state, so reduced motion shows the approved composition. */
+.chapter {
+  --enter: 1;
+  --title: 1;
+  --title2: 1;
+  --open: 1;
+  --meta: 1;
+  --release: 0;
+  --k: 1; /* movement distance scale per viewport */
+  overflow: hidden;
+}
+@media (max-width: 1024px) { .chapter { --k: 0.7; } }
+@media (max-width: 640px) { .chapter { --k: 0.45; } }
+
+/* back plane: from a narrow frame held inside the dark, out to full bleed */
+.ch-field {
+  /* entry: opens from a held frame. release: the plane recedes — its lower edge lifts off
+     the dark and its sides draw in, slightly more on the trailing side of the reading direction */
+  --rx: calc(var(--release) * 3.5vw * var(--k));
+  --rd: calc(var(--release) * 1.5vw * var(--k) * var(--dir));
+  clip-path: inset(
+    calc((1 - var(--enter)) * 9vh)
+    calc((1 - var(--enter)) * 16vw * var(--k) + var(--rx) + var(--rd))
+    calc(var(--release) * min(24vh, 9rem))
+    calc((1 - var(--enter)) * 16vw * var(--k) + var(--rx) - var(--rd))
+  );
+}
+.ch-cue {
+  opacity: calc(var(--title) * 0.6 + var(--meta) * 0.4);
+}
+
+/* front plane: the film title rises into frame; the leading language arrives first,
+   its companion settles a beat later from a shorter, language-aware distance */
+.ch-title {
+  translate: calc((1 - var(--title)) * var(--dir) * -2.5vw * var(--k)) calc((1 - var(--title)) * 22vh * var(--k));
+  opacity: calc(0.15 + var(--title) * 0.85);
+}
+.ch-title2 {
+  translate: calc((1 - var(--title2)) * var(--dir) * 4vw * var(--k)) calc((1 - var(--title2)) * 8vh * var(--k));
+  opacity: var(--title2);
+}
+
+/* mid plane: entering the film — a narrow scope crop opens to the approved 9% letterbox,
+   with only a whisper of scale and focus */
+.ch-film {
+  background: color-mix(in srgb, var(--color-graphite, #222) calc(var(--open) * 100%), transparent);
+}
+.ch-still {
+  clip-path: inset(calc(9% + (1 - var(--open)) * 21%) calc((1 - var(--open)) * 14% * var(--k)));
+  scale: calc(1 + (1 - var(--open)) * 0.06);
+  translate: 0 calc(var(--release) * -3vh * var(--k));
+  filter: grayscale(1) contrast(1.05);
+  /* Scroll already eases this crop; a CSS transition would add a second lag. */
+  transition: none;
+}
+.ch-inset {
+  opacity: calc(max(0, var(--open) - 0.55) / 0.45);
+  translate: 0 calc((1 - var(--open)) * 6vh * var(--k) - var(--release) * 5vh * var(--k));
+}
+
+/* information plane: authorship arrives once the film is established, then everything stops */
+.ch-info {
+  opacity: calc((0.2 + var(--meta) * 0.8) * (1 - var(--release) * 0.3));
+  translate: 0 calc((1 - var(--meta)) * 2.5vh - var(--release) * 2vh * var(--k));
+  scale: calc(1 - var(--release) * 0.015);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* still a composed handoff: the bone plane ends as a framed edge resting on the dark */
+  .ch-field { clip-path: inset(0 3vw 6rem); }
+  .ch-still { filter: grayscale(1) contrast(1.05); }
+  .ch-cue, .ch-title, .ch-title2, .ch-inset, .ch-info { transition: opacity 600ms ease; }
+}
+
+/* Smaller screens keep the cuts and climax, not desktop depth. */
+@media (max-width: 1024px) {
+  .opening__camera { transform: translate3d(0, calc(var(--exit) * 10%), 0); }
+  .fr-type { translate: 0 calc(var(--s) * -2vh * var(--tk, 1)); }
+  .fr-plate { transform: translateY(calc(var(--s) * 1.5vh)); }
+  .love-type { scale: 1; translate: 0 calc(min(var(--s), 0) * -0.6vh); }
+  .hus-plate { translate: 0 calc(var(--s) * (1 - var(--leave)) * 1vh); }
+  .hus-type { translate: none; }
+}
+@media (hover: none), (pointer: coarse) {
+  .opening__plate { transform: none; }
+  .opening__breath { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .opening *, .montage *, .chapter *, .about *, .end-frame * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .opening__camera, .opening__plate, .fr-plate { transform: none; }
+  .love-plate, .love-type, .fr-type, .hus-plate, .hus-type,
+  .ch-title, .ch-title2, .ch-still, .ch-inset, .ch-info {
+    translate: none;
+    scale: 1;
+  }
+  .montage .still { clip-path: none; }
+  .end-frame.is-final .end-mark { transition-delay: 0ms; }
+}

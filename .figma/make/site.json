@@ -1,0 +1,10 @@
+{
+  "description": "Showcase the artistic vision and diverse works of Iranian filmmaker Kamran Hosseinzadeh through a refined, modern portfolio that captivates industry professionals.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
